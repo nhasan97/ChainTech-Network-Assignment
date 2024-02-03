@@ -7,21 +7,21 @@ import Register from "../pages/Register/Register";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root></Root>,
-    children: [
-      {
-        path: "/",
-        element: <Home></Home>,
-      },
-    ],
-  },
-  {
-    path: "/register",
     element: <Register></Register>,
   },
   {
     path: "/login",
     element: <Login></Login>,
+  },
+  {
+    path: "/home",
+    element: <Root></Root>,
+    children: [
+      {
+        path: "/home",
+        element: <Home></Home>,
+      },
+    ],
   },
 ]);
 export default router;

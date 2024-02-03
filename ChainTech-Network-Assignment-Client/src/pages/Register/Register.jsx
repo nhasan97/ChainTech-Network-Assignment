@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BiLogoGoogle } from "react-icons/bi";
 import "./Register.css";
+import useAuth from "../../hooks/useAuth";
+import { uploadImage } from "../../utilities/imageUploader";
+import { GoogleAuthProvider } from "firebase/auth";
+import { saveUserData } from "../../api/api";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
+  //==================== Register Using Email and Password ====================
   const {
     register,
     formState: { errors },
@@ -14,10 +21,65 @@ const Register = () => {
   const [showPass, setShowPass] = useState(false);
 
   const genders = ["Male", "Female", "Other"];
+  const toastobj = {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+  };
+
+  const { registerWithEmailAndPassword, updateUsersProfile, signInWithGoogle } =
+    useAuth();
+  const navigate = useNavigate();
 
   //==================== Register Using Email and Password ====================
-  const onSubmit = async (data) => {};
+  const onSubmit = async (data) => {
+    try {
+      const imageData = await uploadImage(data.photo[0]);
 
+      registerWithEmailAndPassword(data.email, data.pass)
+        .then(async (result) => {
+          updateUsersProfile(data.name, imageData?.data?.display_url)
+            .then(async () => {
+              const dbResponse = await saveUserData(result?.user);
+              console.log(dbResponse);
+              reset();
+              toast.success("Account created successfully", toastobj);
+              navigate("/home");
+            })
+            .catch((err) => {
+              toast.error(err.message, toastobj);
+            });
+        })
+        .catch((err) => {
+          toast.error(err.message, toastobj);
+        });
+    } catch (err) {
+      toast.error(err.message, toastobj);
+    }
+  };
+
+  //================== Register using Google ==================
+  const handleRegistrationWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+
+    signInWithGoogle(provider)
+      .then(async (result) => {
+        if (result?.user?.email) {
+          const dbResponse = await saveUserData(result?.user);
+          console.log(dbResponse);
+          navigate(location?.state ? location.state : "/");
+        }
+      })
+      .catch((err) => {
+        toast.error(err.message, toastobj);
+      });
+  };
   return (
     <div className="reg-container">
       <div className="reg-form-container">
@@ -190,7 +252,10 @@ const Register = () => {
             </Link>
           </p>
           <p className="">Or sign in with</p>
-          <button className="btn google-btn">
+          <button
+            className="btn google-btn"
+            onClick={handleRegistrationWithGoogle}
+          >
             <BiLogoGoogle className="google-icon"></BiLogoGoogle>
           </button>
         </div>
