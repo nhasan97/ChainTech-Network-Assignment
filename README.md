@@ -1,4 +1,4 @@
-## Website Name : User manager
+## Website Name : Profile manager
 
 ## Website Link : [https://user-management-d32b1.web.app](https://user-management-d32b1.web.app)
 
