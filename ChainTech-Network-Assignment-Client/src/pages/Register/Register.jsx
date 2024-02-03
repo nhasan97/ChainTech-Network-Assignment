@@ -30,7 +30,7 @@ const Register = () => {
     draggable: true,
     progress: undefined,
     theme: "light",
-    transition: Bounce,
+    // transition: Bounce,
   };
 
   const { registerWithEmailAndPassword, updateUsersProfile, signInWithGoogle } =
@@ -73,7 +73,7 @@ const Register = () => {
         if (result?.user?.email) {
           const dbResponse = await saveUserData(result?.user);
           console.log(dbResponse);
-          navigate(location?.state ? location.state : "/");
+          navigate(location?.state ? location.state : "/home");
         }
       })
       .catch((err) => {

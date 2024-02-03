@@ -1,16 +1,62 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { BiLogoGoogle } from "react-icons/bi";
 import "./Login.css";
+import useAuth from "../../hooks/useAuth";
+import { saveUserData } from "../../api/api";
+import { GoogleAuthProvider } from "firebase/auth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const { register, handleSubmit } = useForm();
   const [showPass, setShowPass] = useState(false);
+  const { loginWithEmailAndPassword, signInWithGoogle } = useAuth();
 
-  //==================== Login Using Email and Password ====================
-  const onSubmit = (data) => {};
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/home";
 
+  const toastobj = {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+  };
+
+  const onSubmit = (data) => {
+    loginWithEmailAndPassword(data.email, data.pass)
+      .then((result) => {
+        toast.success("Login successful", toastobj);
+        console.log(result.user);
+        navigate(from, { replace: true });
+      })
+      .catch((err) => {
+        toast.error(err.message, toastobj);
+      });
+  };
+
+  const handleLoginWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+
+    signInWithGoogle(provider)
+      .then(async (result) => {
+        if (result?.user?.email) {
+          const dbResponse = await saveUserData(result?.user);
+          console.log(dbResponse);
+          navigate(from, { replace: true });
+        }
+      })
+      .catch((err) => {
+        toast.error(err.message, toastobj);
+      });
+  };
   return (
     <div className="login-container">
       <div className="login-form-container">
@@ -58,12 +104,12 @@ const Login = () => {
         <div className="other-option-container">
           <p className="">
             New here?
-            <Link className="" to="/">
+            <Link className="" to="/home">
               Create a New Account
             </Link>
           </p>
           <p className="">Or sign in with</p>
-          <button className="btn google-btn">
+          <button className="btn google-btn" onClick={handleLoginWithGoogle}>
             <BiLogoGoogle className="google-icon"></BiLogoGoogle>
           </button>
         </div>
