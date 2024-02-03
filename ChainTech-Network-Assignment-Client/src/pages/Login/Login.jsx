@@ -27,7 +27,7 @@ const Login = () => {
     draggable: true,
     progress: undefined,
     theme: "light",
-    transition: Bounce,
+    // transition: Bounce,
   };
 
   const onSubmit = (data) => {
