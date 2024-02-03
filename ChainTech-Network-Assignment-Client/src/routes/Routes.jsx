@@ -3,6 +3,7 @@ import Root from "../layouts/Root";
 import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
+import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -15,11 +16,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <Root></Root>,
+    element: (
+      <PrivateRoute>
+        <Root></Root>
+      </PrivateRoute>
+    ),
     children: [
       {
         path: "/home",
-        element: <Home></Home>,
+        element: (
+          <PrivateRoute>
+            <Home></Home>
+          </PrivateRoute>
+        ),
       },
     ],
   },

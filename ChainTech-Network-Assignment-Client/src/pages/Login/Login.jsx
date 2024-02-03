@@ -104,7 +104,7 @@ const Login = () => {
         <div className="other-option-container">
           <p className="">
             New here?
-            <Link className="" to="/home">
+            <Link className="" to="/">
               Create a New Account
             </Link>
           </p>

@@ -46,7 +46,7 @@ const Register = () => {
         .then(async (result) => {
           updateUsersProfile(data.name, imageData?.data?.display_url)
             .then(async () => {
-              const dbResponse = await saveUserData(result?.user);
+              const dbResponse = await saveUserData(data);
               console.log(dbResponse);
               reset();
               toast.success("Account created successfully", toastobj);
